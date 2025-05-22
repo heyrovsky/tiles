@@ -28,32 +28,6 @@ type Style struct {
 }
 
 var (
-	// SpinnerStyle - Default spinning dots
-	SpinnerStyle = Style{
-		Frames:      []string{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"},
-		Interval:    100 * time.Millisecond,
-		SuccessIcon: "✓",
-		ErrorIcon:   "✗",
-		WorkingIcon: "⠋",
-	}
-
-	// CircleStyle - Spinning circle
-	CircleStyle = Style{
-		Frames:      []string{"◐", "◓", "◑", "◒"},
-		Interval:    150 * time.Millisecond,
-		SuccessIcon: "●",
-		ErrorIcon:   "○",
-		WorkingIcon: "◐",
-	}
-
-	// BarStyle - Classic bar spinner
-	BarStyle = Style{
-		Frames:      []string{"|", "/", "-", "\\"},
-		Interval:    120 * time.Millisecond,
-		SuccessIcon: "✓",
-		ErrorIcon:   "✗",
-		WorkingIcon: "|",
-	}
 
 	// DotsStyle - Pulsing dots
 	DotsStyle = Style{
@@ -62,15 +36,6 @@ var (
 		SuccessIcon: "●",
 		ErrorIcon:   "○",
 		WorkingIcon: "⣾",
-	}
-
-	// ArrowStyle - Arrow spinner
-	ArrowStyle = Style{
-		Frames:      []string{"←", "↖", "↑", "↗", "→", "↘", "↓", "↙"},
-		Interval:    150 * time.Millisecond,
-		SuccessIcon: "→",
-		ErrorIcon:   "×",
-		WorkingIcon: "←",
 	}
 )
 
@@ -98,17 +63,6 @@ func NewDefault() *Writer {
 	return New(Options{Style: DotsStyle})
 }
 
-// NewWithPrefix creates a new progress writer with a prefix and default style
-func NewWithPrefix(prefix string) *Writer {
-	return New(Options{Prefix: prefix, Style: DotsStyle})
-}
-
-// NewWithStyle creates a new progress writer with a custom style
-func NewWithStyle(style Style) *Writer {
-	return New(Options{Style: style})
-}
-
-// Write implements io.Writer interface
 func (w *Writer) Write(p []byte) (n int, err error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
@@ -279,27 +233,9 @@ func (w *Writer) printFinal(icon, message string) {
 	fmt.Println(finalMsg)
 }
 
-// Utility functions
-
 // WriteFunc is a helper function that creates a temporary progress writer for a function
 func WriteFunc(message string, fn func() error) error {
 	w := NewDefault()
-	w.Start(message)
-	defer w.Stop()
-
-	err := fn()
-	if err != nil {
-		w.Error(fmt.Sprintf("Failed: %v", err))
-		return err
-	}
-
-	w.Success("Completed successfully")
-	return nil
-}
-
-// WriteFuncWithStyle is like WriteFunc but with custom style
-func WriteFuncWithStyle(message string, style Style, fn func() error) error {
-	w := NewWithStyle(style)
 	w.Start(message)
 	defer w.Stop()
 

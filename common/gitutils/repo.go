@@ -35,11 +35,18 @@ func CloneRepository(url string, name string) (*git.Repository, error) {
 	if err := utils.CreateDirectoryIfNotExists(targetDir); err != nil {
 		return nil, fmt.Errorf("failed to create directory: %w", err)
 	}
-
-	repo, err := git.PlainClone(targetDir, false, &git.CloneOptions{
+	cloneOptions := &git.CloneOptions{
 		URL:      url,
 		Progress: utils.NewDefault(),
-	})
+	}
+	if utils.IsSSHGitUrl(url) {
+		auth, err := GetSSHAuth()
+		if err != nil {
+			return nil, err
+		}
+		cloneOptions.Auth = auth
+	}
+	repo, err := git.PlainClone(targetDir, false, cloneOptions)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to clone repository: %w", err)

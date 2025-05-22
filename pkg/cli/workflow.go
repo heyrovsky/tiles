@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 
+	"github.com/alecthomas/kong"
 	"github.com/heyrovsky/tiles/common/gitutils"
 )
 
@@ -57,7 +58,7 @@ func (cmd *WorkflowRemoteAddCmd) Run() error {
 	return nil
 }
 
-func (cmd *WorkflowRemoteCloneCmd) Run() error {
+func (cmd *WorkflowRemoteCloneCmd) Run(ctx *kong.Context) error {
 	fmt.Printf("Cloning workflow from URL: %s\n", cmd.Url)
 	_, err := gitutils.CloneRepository(cmd.Url, cmd.Name)
 	return err

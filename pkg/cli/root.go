@@ -2,6 +2,7 @@ package cli
 
 import (
 	"log"
+	"strings"
 
 	"github.com/alecthomas/kong"
 	"github.com/heyrovsky/tiles/config"
@@ -11,6 +12,9 @@ import (
 var CLI struct {
 	Workflow WorkflowCmd `cmd:"" help:"Manage workflow operations."`
 	Version  VersionCmd  `cmd:"" help:"Show application version."`
+
+	SSHKey     string `help:"Path to SSH private key file (for auth)" defaults:""`
+	SSHKeyPass string `help:"Password to the ssh key" defaults:""`
 }
 
 // Run parses and executes CLI commands.
@@ -21,6 +25,14 @@ func Run() {
 		kong.Vars{"version": config.APP_VERSION},
 		kong.UsageOnError(),
 	)
+
+	if strings.TrimSpace(CLI.SSHKey) != "" {
+		config.LoadSSHkeyLoaction(strings.TrimSpace(CLI.SSHKey))
+	}
+
+	if CLI.SSHKeyPass != "" {
+		config.LoadSSHkeyPass(CLI.SSHKeyPass)
+	}
 
 	if err := ctx.Run(); err != nil {
 		log.Fatalf("Error: %v\n", err)
