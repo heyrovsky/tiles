@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 )
 
@@ -12,4 +13,15 @@ func AbsPath(folder string) (string, error) {
 		return "", fmt.Errorf("failed to get absolute path: %w", err)
 	}
 	return absPath, nil
+}
+
+func CreateDirectoryIfNotExists(path string) error {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		err = os.MkdirAll(path, 0755)
+		if err != nil {
+			return fmt.Errorf("failed to create directory: %w", err)
+		}
+	}
+
+	return nil
 }
