@@ -19,7 +19,7 @@ func InitRepository(path string) (*git.Repository, error) {
 		return nil, fmt.Errorf("failed to initialize repository: %w", err)
 	}
 	// init metadata branch
-	if err := createOrphanRepository(repo, fmt.Sprintf("%s-metadata", config.APP_NAME)); err != nil {
+	if err := createOrphanRepository(repo, fmt.Sprintf("%s-orchestrator-metadata", config.APP_NAME)); err != nil {
 		return nil, err
 	}
 	return repo, nil
