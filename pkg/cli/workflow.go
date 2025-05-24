@@ -7,13 +7,10 @@ import (
 	"github.com/heyrovsky/tiles/common/gitutils"
 )
 
+// ==== Structs ====
+
 type WorkflowInitCmd struct {
 	Name string `arg:"" required:"" help:"Name the tiles workflow."`
-}
-
-type WorkflowRemoteCloneCmd struct {
-	Url  string `arg:"" required:"" help:"Git URL to clone the workflow from."`
-	Name string `help:"Custom name for the workflow folder"`
 }
 
 type WorkflowRemoteAddCmd struct {
@@ -21,30 +18,96 @@ type WorkflowRemoteAddCmd struct {
 	Url  string `arg:"" required:"" help:"URL of the remote."`
 }
 
+type WorkflowRemoteEditCmd struct {
+	Name string `arg:"" required:"" help:"Name of the remote."`
+	Url  string `arg:"" required:"" help:"URL of the remote."`
+}
+
+type WorkflowRemoteDeleteCmd struct {
+	Name string `arg:"" required:"" help:"Name of the remote."`
+}
+
+type WorkflowRemoteShowCmd struct{}
+
 type WorkflowRemotePushCmd struct{}
 
 type WorkflowRemoteSyncCmd struct{}
 
-type WorkflowRemoteCmd struct {
-	Add   WorkflowRemoteAddCmd   `cmd:"" help:"Add a remote to the workflow."`
-	Push  WorkflowRemotePushCmd  `cmd:"" help:"Push workflow to remote."`
-	Sync  WorkflowRemoteSyncCmd  `cmd:"" help:"Sync workflow with remote."`
-	Clone WorkflowRemoteCloneCmd `cmd:"" help:"Clone a workflow from a git repository."`
+type WorkflowRemoteCloneCmd struct {
+	Url  string `arg:"" required:"" help:"Git URL to clone the workflow from."`
+	Name string `help:"Custom name for the workflow folder"`
 }
 
-// functions
+type WorkflowRemoteCmd struct {
+	Add    WorkflowRemoteAddCmd    `cmd:"" help:"Add a remote to the workflow."`
+	Show   WorkflowRemoteShowCmd   `cmd:"" help:"Show's all remote of the workflow"`
+	Push   WorkflowRemotePushCmd   `cmd:"" help:"Push workflow to remote."`
+	Sync   WorkflowRemoteSyncCmd   `cmd:"" help:"Sync workflow with remote."`
+	Clone  WorkflowRemoteCloneCmd  `cmd:"" help:"Clone a workflow from a git repository."`
+	Edit   WorkflowRemoteEditCmd   `cmd:"" help:"Edit a remote URL of the workflow."`
+	Delete WorkflowRemoteDeleteCmd `cmd:"" help:"Delete a remote from the workflow."`
+}
+
+// ==== Functions ====
 
 func (cmd *WorkflowInitCmd) Run() error {
 	fmt.Printf("Initializing new workflow with name: %s\n", cmd.Name)
 	_, err := gitutils.InitRepository(cmd.Name)
+	return err
+}
+
+func (cmd *WorkflowRemoteShowCmd) Run() error {
+	repoPath, err := gitutils.GetRepoPath()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to determine repository path: %w", err)
+	}
+
+	if err := gitutils.ShowAllRemotes(repoPath); err != nil {
+		return fmt.Errorf("failed to show remotes: %w", err)
+	}
+
+	return nil
+}
+
+func (cmd *WorkflowRemoteAddCmd) Run() error {
+	fmt.Printf("Adding remote '%s' with URL: %s\n", cmd.Name, cmd.Url)
+
+	repoPath, err := gitutils.GetRepoPath()
+	if err != nil {
+		return fmt.Errorf("failed to determine repository path: %w", err)
+	}
+
+	if err := gitutils.AddRemoteUrltoRepository(repoPath, cmd.Name, cmd.Url); err != nil {
+		return fmt.Errorf("failed to add remote: %w", err)
 	}
 	return nil
 }
 
-func (cmd *WorkflowRemoteSyncCmd) Run() error {
-	fmt.Println("Syncing workflow with remote...")
+func (cmd *WorkflowRemoteEditCmd) Run() error {
+	fmt.Printf("Editing remote '%s' to new URL: %s\n", cmd.Name, cmd.Url)
+
+	repoPath, err := gitutils.GetRepoPath()
+	if err != nil {
+		return fmt.Errorf("failed to determine repository path: %w", err)
+	}
+
+	if err := gitutils.EditRemoteUrl(repoPath, cmd.Name, cmd.Url); err != nil {
+		return fmt.Errorf("failed to edit remote: %w", err)
+	}
+	return nil
+}
+
+func (cmd *WorkflowRemoteDeleteCmd) Run() error {
+	fmt.Printf("Deleting remote '%s'\n", cmd.Name)
+
+	repoPath, err := gitutils.GetRepoPath()
+	if err != nil {
+		return fmt.Errorf("failed to determine repository path: %w", err)
+	}
+
+	if err := gitutils.DeleteRemote(repoPath, cmd.Name); err != nil {
+		return fmt.Errorf("failed to delete remote: %w", err)
+	}
 	return nil
 }
 
@@ -53,8 +116,8 @@ func (cmd *WorkflowRemotePushCmd) Run() error {
 	return nil
 }
 
-func (cmd *WorkflowRemoteAddCmd) Run() error {
-	fmt.Printf("Adding remote '%s' with URL: %s\n", cmd.Name, cmd.Url)
+func (cmd *WorkflowRemoteSyncCmd) Run() error {
+	fmt.Println("Syncing workflow with remote...")
 	return nil
 }
 

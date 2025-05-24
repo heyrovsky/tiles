@@ -26,3 +26,11 @@ func LoadSSHkeyLoaction(path string) {
 func LoadSSHkeyPass(password string) {
 	SSH_KEY_PASS = strings.TrimSpace(password)
 }
+
+func LoadLocalRepoLocation(path string) {
+	absPath, err := utils.AbsPath(path)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	LOCAL_REPO_LOCATION = absPath
+}

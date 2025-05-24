@@ -46,6 +46,8 @@ func GetSSHAuthWithPassphrase(passphrase string) (*ssh.PublicKeys, error) {
 		if perr != nil {
 			return nil, perr
 		}
+		// for using the password later
+		config.LoadSSHkeyPass(passphrase)
 		auth, err = createSSHAuth(privateKey, passphrase)
 		if err != nil {
 			return nil, fmt.Errorf("unable to authenticate using provided passphrase: %w", err)

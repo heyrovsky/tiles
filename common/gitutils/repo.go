@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/heyrovsky/tiles/common/utils"
+	"github.com/heyrovsky/tiles/config"
 )
 
 func InitRepository(path string) (*git.Repository, error) {
@@ -17,7 +18,10 @@ func InitRepository(path string) (*git.Repository, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize repository: %w", err)
 	}
-
+	// init metadata branch
+	if err := createOrphanRepository(repo, fmt.Sprintf("%s-metadata", config.APP_NAME)); err != nil {
+		return nil, err
+	}
 	return repo, nil
 }
 

@@ -15,6 +15,8 @@ var CLI struct {
 
 	SSHKey     string `help:"Path to SSH private key file (for auth)" defaults:""`
 	SSHKeyPass string `help:"Password to the ssh key" defaults:""`
+
+	Repo string `help:"The local location of the repository, This will be used when you to initiate tiles commands when you are not operating within a tiles repository" defaults:""`
 }
 
 // Run parses and executes CLI commands.
@@ -30,8 +32,12 @@ func Run() {
 		config.LoadSSHkeyLoaction(strings.TrimSpace(CLI.SSHKey))
 	}
 
-	if CLI.SSHKeyPass != "" {
+	if strings.TrimSpace(CLI.SSHKeyPass) != "" {
 		config.LoadSSHkeyPass(CLI.SSHKeyPass)
+	}
+
+	if strings.TrimSpace(CLI.Repo) != "" {
+		config.LoadLocalRepoLocation(CLI.Repo)
 	}
 
 	if err := ctx.Run(); err != nil {

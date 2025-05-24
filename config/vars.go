@@ -10,4 +10,6 @@ var (
 var (
 	SSH_KEY_LOCATION = ""
 	SSH_KEY_PASS     = ""
+
+	LOCAL_REPO_LOCATION = ""
 )
