@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"github.com/heyrovsky/tiles/config"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 // GetSSHAuth returns SSH authentication using a passphrase from config or user input if needed.
@@ -105,7 +105,7 @@ func isEncryptedKeyError(err error) bool {
 // promptForPassphrase prompts the user to enter a passphrase securely.
 func promptForPassphrase(keyPath string) (string, error) {
 	fmt.Printf("Enter passphrase for SSH key %s: ", keyPath)
-	password, err := terminal.ReadPassword(int(syscall.Stdin))
+	password, err := term.ReadPassword(int(syscall.Stdin))
 	fmt.Println()
 	if err != nil {
 		return "", fmt.Errorf("failed to read passphrase: %w", err)

@@ -19,7 +19,7 @@ func GetRepoPath() (string, error) {
 }
 
 // openRepo opens a git repository at the given path.
-func openRepo(repoPath string) (*git.Repository, error) {
+func OpenRepo(repoPath string) (*git.Repository, error) {
 	repo, err := git.PlainOpen(repoPath)
 	if err != nil {
 		return nil, fmt.Errorf("could not open git repo at %s: %w", repoPath, err)
@@ -29,7 +29,7 @@ func openRepo(repoPath string) (*git.Repository, error) {
 
 // createOrphanRepository creates a new orphan branch with an initial empty commit.
 // This is useful for initializing a branch without any parent commit.
-func createOrphanRepository(repo *git.Repository, branchName string) error {
+func CreateOrphanRepository(repo *git.Repository, branchName string) error {
 	// Create an empty tree object
 	tree := &object.Tree{}
 	treeObj := repo.Storer.NewEncodedObject()

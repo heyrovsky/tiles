@@ -8,7 +8,7 @@ import (
 
 // AddRemoteUrltoRepository adds a new remote with the given name and URL.
 func AddRemoteUrltoRepository(repoPath, name, url string) error {
-	repo, err := openRepo(repoPath)
+	repo, err := OpenRepo(repoPath)
 	if err != nil {
 		return err
 	}
@@ -27,7 +27,7 @@ func AddRemoteUrltoRepository(repoPath, name, url string) error {
 
 // ShowAllRemotes lists all remotes in the repository.
 func ShowAllRemotes(repoPath string) error {
-	repo, err := openRepo(repoPath)
+	repo, err := OpenRepo(repoPath)
 	if err != nil {
 		return err
 	}
@@ -55,7 +55,7 @@ func ShowAllRemotes(repoPath string) error {
 
 // EditRemoteUrl updates the URL of an existing remote.
 func EditRemoteUrl(repoPath, name, newUrl string) error {
-	repo, err := openRepo(repoPath)
+	repo, err := OpenRepo(repoPath)
 	if err != nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func EditRemoteUrl(repoPath, name, newUrl string) error {
 
 // DeleteRemote removes a remote from the repository.
 func DeleteRemote(repoPath, name string) error {
-	repo, err := openRepo(repoPath)
+	repo, err := OpenRepo(repoPath)
 	if err != nil {
 		return err
 	}
