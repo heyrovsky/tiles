@@ -1,16 +1,21 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"os/user"
 	"runtime"
+	"syscall"
+
+	"golang.org/x/term"
 )
 
-func GetHostname() string {
+func GetHostName() string {
 	hostname, err := os.Hostname()
 	if err != nil {
 		return "unknown-host"
 	}
+
 	return hostname
 }
 
@@ -29,4 +34,14 @@ func GetUsername() string {
 	}
 
 	return "unknown-user"
+}
+
+func PromptForSecureEntry(message string) (string, error) {
+	fmt.Println(message)
+	entry, err := term.ReadPassword(int(syscall.Stdin))
+	fmt.Println()
+	if err != nil {
+		return "", err
+	}
+	return string(entry), nil
 }

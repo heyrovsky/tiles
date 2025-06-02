@@ -4,7 +4,22 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"github.com/spf13/viper"
 )
+
+func LoadConfig(path string) {
+	viper.SetConfigFile(path)
+	viper.SetConfigType("toml")
+
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	if err := viper.ReadInConfig(); err != nil {
+		panic(fmt.Errorf("fatal error reading config file: %w", err))
+	}
+}
 
 // AbsPath returns the absolute path of the given folder.
 func AbsPath(folder string) (string, error) {
