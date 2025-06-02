@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	"github.com/alecthomas/kong"
-	"github.com/heyrovsky/tiles/common/gitutils"
+	"github.com/heyrovsky/tiles/config"
+	"github.com/heyrovsky/tiles/pkg/functions/workflow"
 )
 
 // ==== Structs ====
@@ -52,17 +53,16 @@ type WorkflowRemoteCmd struct {
 
 func (cmd *WorkflowInitCmd) Run() error {
 	fmt.Printf("Initializing new workflow with name: %s\n", cmd.Name)
-	_, err := gitutils.InitRepository(cmd.Name)
-	return err
+	return workflow.InitRepository(cmd.Name)
 }
 
 func (cmd *WorkflowRemoteShowCmd) Run() error {
-	repoPath, err := gitutils.GetRepoPath()
+	repoPath, err := config.GetLocalRepositoryLocation()
 	if err != nil {
 		return fmt.Errorf("failed to determine repository path: %w", err)
 	}
 
-	if err := gitutils.ShowAllRemotes(repoPath); err != nil {
+	if err := workflow.ShowAllRemote(repoPath); err != nil {
 		return fmt.Errorf("failed to show remotes: %w", err)
 	}
 
@@ -72,12 +72,12 @@ func (cmd *WorkflowRemoteShowCmd) Run() error {
 func (cmd *WorkflowRemoteAddCmd) Run() error {
 	fmt.Printf("Adding remote '%s' with URL: %s\n", cmd.Name, cmd.Url)
 
-	repoPath, err := gitutils.GetRepoPath()
+	repoPath, err := config.GetLocalRepositoryLocation()
 	if err != nil {
 		return fmt.Errorf("failed to determine repository path: %w", err)
 	}
 
-	if err := gitutils.AddRemoteUrltoRepository(repoPath, cmd.Name, cmd.Url); err != nil {
+	if err := workflow.AddRemoteUrltoLocalRepository(repoPath, cmd.Name, cmd.Url); err != nil {
 		return fmt.Errorf("failed to add remote: %w", err)
 	}
 	return nil
@@ -86,12 +86,12 @@ func (cmd *WorkflowRemoteAddCmd) Run() error {
 func (cmd *WorkflowRemoteEditCmd) Run() error {
 	fmt.Printf("Editing remote '%s' to new URL: %s\n", cmd.Name, cmd.Url)
 
-	repoPath, err := gitutils.GetRepoPath()
+	repoPath, err := config.GetLocalRepositoryLocation()
 	if err != nil {
 		return fmt.Errorf("failed to determine repository path: %w", err)
 	}
 
-	if err := gitutils.EditRemoteUrl(repoPath, cmd.Name, cmd.Url); err != nil {
+	if err := workflow.EditRemoteUrl(repoPath, cmd.Name, cmd.Url); err != nil {
 		return fmt.Errorf("failed to edit remote: %w", err)
 	}
 	return nil
@@ -100,12 +100,12 @@ func (cmd *WorkflowRemoteEditCmd) Run() error {
 func (cmd *WorkflowRemoteDeleteCmd) Run() error {
 	fmt.Printf("Deleting remote '%s'\n", cmd.Name)
 
-	repoPath, err := gitutils.GetRepoPath()
+	repoPath, err := config.GetLocalRepositoryLocation()
 	if err != nil {
 		return fmt.Errorf("failed to determine repository path: %w", err)
 	}
 
-	if err := gitutils.DeleteRemote(repoPath, cmd.Name); err != nil {
+	if err := workflow.DeleteRemote(repoPath, cmd.Name); err != nil {
 		return fmt.Errorf("failed to delete remote: %w", err)
 	}
 	return nil
@@ -123,6 +123,6 @@ func (cmd *WorkflowRemoteSyncCmd) Run() error {
 
 func (cmd *WorkflowRemoteCloneCmd) Run(ctx *kong.Context) error {
 	fmt.Printf("Cloning workflow from URL: %s\n", cmd.Url)
-	_, err := gitutils.CloneRepository(cmd.Url, cmd.Name)
-	return err
+
+	return workflow.CloneRepository(cmd.Url, cmd.Name, config.SSH_KEY_LOCATION, config.SSH_KEY_PASS)
 }

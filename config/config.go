@@ -34,3 +34,11 @@ func LoadLocalRepoLocation(path string) {
 	}
 	LOCAL_REPO_LOCATION = absPath
 }
+
+func GetLocalRepositoryLocation() (string, error) {
+	if LOCAL_REPO_LOCATION != "" {
+		return LOCAL_REPO_LOCATION, nil
+	}
+
+	return utils.AbsPath(".")
+}
